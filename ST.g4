@@ -94,7 +94,9 @@ invocation                          : ( fb_instance_name | type_name | 'THIS' | 
 subprog_ctrl_stmt                   : func_call | invocation | 'SUPER' '(' ')' | 'RETURN'; 
 param_assign                        : ( ( variable_name ':=' )? expression ) | ref_assign | ( 'NOT' ? variable_name '=>' variable ); 
 selection_stmt                      : if_stmt | case_stmt; 
-if_stmt                             : 'IF' expression 'THEN' stmt_list ( 'ELSIF' expression 'THEN' stmt_list )* ( 'ELSE' stmt_list )? 'END_IF'; 
+if_stmt                             : 'IF' expression 'THEN' stmt_list elsif_stmt* else_stmt? 'END_IF'; 
+elsif_stmt                          : 'ELSIF' expression 'THEN' stmt_list;
+else_stmt                           : 'ELSE' stmt_list;
 case_stmt                           : 'CASE' expression 'OF' case_selection + ( 'ELSE' stmt_list )? 'END_CASE'; 
 case_selection                      : case_list ':' stmt_list; 
 case_list                           : case_list_elem ( ',' case_list_elem )*; 
