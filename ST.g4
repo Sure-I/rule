@@ -74,8 +74,7 @@ expression                          : '(' expression ')'
                                     | expression '**' expression
                                     | ( '+' | '-' ) expression
                                     | constant
-                                    | enum_value
-                                    | variable_access
+                                    | var_access
                                     | func_call
                                     | ref_value;
 
@@ -83,7 +82,6 @@ expression                          : '(' expression ')'
 
 //statement部分
 statements                          : stmt_list;
-variable_access                     : variable Multibit_part_access ?; 
 fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int ); 
 func_call                           : func_access '(' ( param_assign ( ',' param_assign )* )? ')'; 
 stmt_list                           : ( stmt ? ';' )*; 
