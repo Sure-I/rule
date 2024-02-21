@@ -34,6 +34,7 @@ std_func_name                       : 'TRUNC' | 'ABS' | 'SQRT' | 'LN' | 'LOG' | 
                                     | 'AND' | 'OR' | 'XOR' | 'NOT' | 'SEL' | 'MAX' | 'MIN' | 'LIMIT' | 'MUX ' | 'GT' | 'GE' | 'EQ' | 'LE' | 'LT' | 'NE' | 'LEN' | 'LEFT' | 'RIGHT' | 'MID' | 'CONCAT' | 'INSERT' | 'DELETE' | 'REPLACE' | 'FIND'; 
 derived_func_name                   : Identifier;
 
+func_call                           : func_access '(' ( param_assign ( ',' param_assign )* )? ')'; 
 func_access                         : ( namespace_name '.' )* func_name;
 
 /* 函数块Function_block */
@@ -82,31 +83,44 @@ expression                          : '(' expression ')'
 
 //statement部分
 statements                          : stmt_list;
-fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int ); 
-func_call                           : func_access '(' ( param_assign ( ',' param_assign )* )? ')'; 
 stmt_list                           : ( stmt ? ';' )*; 
 stmt                                : assign_stmt | subprog_ctrl_stmt | selection_stmt | iteration_stmt | exit_stmt | continue_stmt; 
+
+fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int ); 
+
 assign_stmt                         : ( variable ':=' expression ) | ref_assign | assignment_attempt; 
 assignment_attempt                  : ( ref_name | ref_deref ) '?=' ( ref_name | ref_deref | ref_value ); 
+
 invocation                          : ( fb_instance_name | type_name | 'THIS' | ( ( 'THIS' '.' )? ( ( ( fb_instance_name | class_instance_name ) '.' )+ ) type_name ) ) '(' ( param_assign ( ',' param_assign )* )? ')'; 
 subprog_ctrl_stmt                   : func_call | invocation | 'SUPER' '(' ')' | 'RETURN'; 
 param_assign                        : ( ( variable_name ':=' )? expression ) | ref_assign | ( 'NOT' ? variable_name '=>' variable ); 
+
 selection_stmt                      : if_stmt | case_stmt; 
+
 if_stmt                             : 'IF' expression 'THEN' stmt_list elsif_stmt* else_stmt? 'END_IF'; 
 elsif_stmt                          : 'ELSIF' expression 'THEN' stmt_list;
 else_stmt                           : 'ELSE' stmt_list;
+
 case_stmt                           : 'CASE' expression 'OF' case_selection + ( 'ELSE' stmt_list )? 'END_CASE'; 
 case_selection                      : case_list ':' stmt_list; 
 case_list                           : case_list_elem ( ',' case_list_elem )*; 
 case_list_elem                      : subrange | expression; 
+
 iteration_stmt                      : for_stmt | while_stmt | repeat_stmt;
-exit_stmt                           : 'EXIT';
-continue_stmt                       : 'CONTINUE';
+
 for_stmt                            : 'FOR' control_variable ':=' for_list 'DO' stmt_list 'END_FOR'; 
 control_variable                    : Identifier; 
-for_list                            : expression 'TO' expression ( 'BY' expression )?; 
+for_list                            : start_expr 'TO' end_expr ( 'BY' step_expr )?; 
+start_expr                          : expression;
+end_expr                            : expression;
+step_expr                           : expression;
+
 while_stmt                          : 'WHILE' expression 'DO' stmt_list 'END_WHILE'; 
+
 repeat_stmt                         : 'REPEAT' stmt_list 'UNTIL' expression 'END_REPEAT';
+
+exit_stmt                           : 'EXIT';
+continue_stmt                       : 'CONTINUE';
 
 /* 数据类型 */
 data_type_access                    : elem_type_name | derived_type_access;
