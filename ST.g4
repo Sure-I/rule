@@ -148,23 +148,32 @@ string_type_access                  : ( namespace_name '.' )* string_Type_Name;
 type_access                         : ( namespace_name '.' )* type_name;
 type_name                           : Identifier;
 
-
-data_type_decl                      : 'TYPE' ( type_decl ';' )+ 'END_TYPE'; 
+data_type_decl                      : 'TYPE' type_decl_list 'END_TYPE'; 
+type_decl_list                      : ( type_decl ';' )+;
 type_decl                           : simple_type_decl | subrange_type_decl | enum_type_decl | array_type_decl | struct_type_decl | str_type_decl | ref_type_decl; 
 
-simple_type_decl                    : Identifier ':' simple_spec_init; 
+/* ///这里注意一个问题，影响到emf的ECore编写
+//////类型声明是独立的，初始化属于变量声明的部分
+//////对原规则做出修改，在类型声明中去除init
+///////////////////////////////////////////// */
+simple_type_decl                    : type_name ':' elem_type_name; 
+
 simple_spec_init                    : elem_type_name (':=' expression )?; 
 
-subrange_type_decl                  : Identifier ':' subrange_spec_init; 
+//子范围数据类型定义
+subrange_type_decl                  : type_name ':' subrange_spec;
+subrange_spec                       : elem_type_name subrange | type_access; 
+subrange                            : '(' expression '..' expression ')'; 
+
 subrange_spec_init                  : subrange_spec ( ':=' Signed_Int )?; 
-subrange_spec                       : Int_Type_Name '(' subrange ')' | type_access; 
-subrange                            : expression '..' expression; 
+
 // 枚举定义
-enum_type_decl                      : Identifier ':' ( ( enum_spec_init | elem_type_name ? named_spec_init )  ); 
+enum_type_decl                      : type_name ':' ( ( enum_spec_init | elem_type_name ? named_spec_init )  ); 
 named_spec_init                     : '(' enum_value_spec ( ',' enum_value_spec )* ')' ( ':=' enum_value )?; 
 enum_spec_init                      : ( ( '(' Identifier ( ',' Identifier )* ')' ) | type_access ) ( ':=' enum_value )?; 
 enum_value_spec                     : Identifier ( ':=' ( expression ) )?; 
 enum_value                          : ( Identifier '#' )? Identifier; 
+
 // 数组定义
 array_type_decl                     : Identifier ':' array_spec_init; 
 array_spec_init                     : array_spec ( ':=' array_init )?; 
