@@ -168,17 +168,17 @@ subrange                            : '(' expression '..' expression ')';
 subrange_spec_init                  : subrange_spec ( ':=' expression )?; 
 
 // 枚举定义
-enum_type_decl                      : type_name ':' ( ( enum_spec_init | elem_type_name ? named_spec_init ) ); 
-named_spec_init                     : '(' enum_value_spec ( ',' enum_value_spec )* ')' ( ':=' enum_value )?; 
-enum_value_spec                     : Identifier ( ':=' ( expression ) )?;
-
 enum_type_decl                      : type_name ':' enum_spec;
 
-enum_spec                           : type_access | ( '(' enum_value ( ',' enum_value )* ')');
-enum_value                          : 
-quote_value                         : ( type_name '#' )? enum_value; 
+enum_spec                           : type_access 
+                                    | '(' enum_value ( ',' enum_value )* ')'
+                                    | elem_type_name? '(' named_spec ( ',' named_spec )* ')';
 
-enum_spec_init                      : enum_spec (':=' enum_value)?;
+named_spec                          : enum_value ( ':=' expression )?;
+quote_value                         : ( type_name '#' )? enum_value; 
+enum_value                          : Identifier;
+
+enum_spec_init                      : enum_spec (':=' quote_value)?;
 // 数组定义
 array_type_decl                     : Identifier ':' array_spec_init; 
 array_spec_init                     : array_spec ( ':=' array_init )?; 
