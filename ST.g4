@@ -175,7 +175,8 @@ enum_value_spec                     : Identifier ( ':=' ( expression ) )?;
 enum_type_decl                      : type_name ':' enum_spec;
 
 enum_spec                           : type_access | ( '(' enum_value ( ',' enum_value )* ')');
-enum_value                          : ( Identifier '#' )? Identifier; 
+enum_value                          : 
+quote_value                         : ( type_name '#' )? enum_value; 
 
 enum_spec_init                      : enum_spec (':=' enum_value)?;
 // 数组定义
