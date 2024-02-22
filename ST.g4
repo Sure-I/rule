@@ -234,7 +234,7 @@ var_spec                            : elem_type_name | array_spec | type_access 
 
 /* decl_common_part                    :variable_list ':' (simple_spec_init | str_var_init | ref_spec_init | array_spec_init | struct_spec_init | edge_decl | unknown_decl)
                                     | interface_spec_init; */
-decl_common_part                    :variable_list ':' (simple_spec_init | subrange_spec_init | ref_spec_init | array_spec_init | struct_spec_init | unknown_decl)
+decl_common_part                    :variable_list ':' (simple_spec_init | subrange_spec_init | enum_spec_init | ref_spec_init | array_spec_init | struct_spec_init | unknown_decl)
                                     | interface_spec_init;
 
 //变量初始化
