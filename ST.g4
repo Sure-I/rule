@@ -162,18 +162,22 @@ simple_spec_init                    : elem_type_name (':=' expression )?;
 
 //子范围数据类型定义
 subrange_type_decl                  : type_name ':' subrange_spec;
-subrange_spec                       : elem_type_name subrange | type_access; 
+subrange_spec                       : type_access | elem_type_name subrange ; 
 subrange                            : '(' expression '..' expression ')'; 
 
-subrange_spec_init                  : subrange_spec ( ':=' Signed_Int )?; 
+subrange_spec_init                  : subrange_spec ( ':=' expression )?; 
 
 // 枚举定义
-enum_type_decl                      : type_name ':' ( ( enum_spec_init | elem_type_name ? named_spec_init )  ); 
+enum_type_decl                      : type_name ':' ( ( enum_spec_init | elem_type_name ? named_spec_init ) ); 
 named_spec_init                     : '(' enum_value_spec ( ',' enum_value_spec )* ')' ( ':=' enum_value )?; 
-enum_spec_init                      : ( ( '(' Identifier ( ',' Identifier )* ')' ) | type_access ) ( ':=' enum_value )?; 
-enum_value_spec                     : Identifier ( ':=' ( expression ) )?; 
+enum_value_spec                     : Identifier ( ':=' ( expression ) )?;
+
+enum_type_decl                      : type_name ':' enum_spec;
+
+enum_spec                           : type_access | ( '(' enum_value ( ',' enum_value )* ')');
 enum_value                          : ( Identifier '#' )? Identifier; 
 
+enum_spec_init                      : enum_spec (':=' enum_value)?;
 // 数组定义
 array_type_decl                     : Identifier ':' array_spec_init; 
 array_spec_init                     : array_spec ( ':=' array_init )?; 
@@ -229,7 +233,7 @@ var_spec                            : elem_type_name | array_spec | type_access 
 
 /* decl_common_part                    :variable_list ':' (simple_spec_init | str_var_init | ref_spec_init | array_spec_init | struct_spec_init | edge_decl | unknown_decl)
                                     | interface_spec_init; */
-decl_common_part                    :variable_list ':' (simple_spec_init | ref_spec_init | array_spec_init | struct_spec_init | unknown_decl)
+decl_common_part                    :variable_list ':' (simple_spec_init | subrange_spec_init | ref_spec_init | array_spec_init | struct_spec_init | unknown_decl)
                                     | interface_spec_init;
 
 //变量初始化
