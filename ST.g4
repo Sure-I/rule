@@ -162,8 +162,8 @@ simple_spec_init                    : elem_type_name (':=' expression )?;
 
 //子范围数据类型定义
 subrange_type_decl                  : type_name ':' subrange_spec;
-subrange_spec                       : type_access | elem_type_name subrange ; 
-subrange                            : '(' expression '..' expression ')'; 
+subrange_spec                       : type_access | elem_type_name '('subrange')' ; 
+subrange                            : expression '..' expression; 
 
 subrange_spec_init                  : subrange_spec ( ':=' expression )?; 
 
@@ -179,14 +179,19 @@ quote_value                         : ( type_name '#' )? enum_value;
 enum_value                          : Identifier;
 
 enum_spec_init                      : enum_spec (':=' quote_value)?;
+
 // 数组定义
-array_type_decl                     : Identifier ':' array_spec_init; 
-array_spec_init                     : array_spec ( ':=' array_init )?; 
-array_spec                          :  'ARRAY' '[' subrange ( ',' subrange )* ']' 'OF' data_type_access; 
-array_init                          : '[' array_elem_init ( ',' array_elem_init )* ']'; 
-array_elem_init                     : array_elem_init_value | Unsigned_Int '(' array_elem_init_value ? ')'; 
+array_type_decl                     : type_name ':' array_spec;
+array_spec                          : type_access
+                                    | 'ARRAY' '[' subrange ( ',' subrange)* ']' 'OF' data_type_access;
+
+array_spec_init                     : array_spec (':=' array_init)?;
+
+array_init                          : '[' array_elem_init ( ',' array_elem_init )* ']';
+array_elem_init                     : array_elem_init_value | Unsigned_Int '(' array_elem_init_value ? ')';
 array_elem_init_value               : expression | enum_value | struct_init | array_init; 
 
+//结构体定义
 struct_type_decl                    : Identifier ':' struct_spec; 
 struct_spec                         : struct_decl | struct_spec_init; 
 struct_spec_init                    : type_access ( ':=' struct_init )?; 
