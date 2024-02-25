@@ -187,9 +187,10 @@ array_spec                          : type_access
 
 array_spec_init                     : array_spec (':=' array_init)?;
 
-array_init                          : '[' array_elem_init_value ( ',' array_elem_init_value )* ']'
-                                    | '(' '('array_elem_init_value ( ',' array_elem_init_value )* ')' ( ',' ('('array_elem_init_value ( ',' array_elem_init_value )* ')') )*')'
+array_init                          : '[' array_elem_init ']'
+                                    | '(' '('array_elem_init ')' ( ',' '('array_elem_init ')' )*')'
                                     | '[' Unsigned_Int '(' array_elem_init_value? ')';
+array_elem_init                     : array_elem_init_value ( ',' array_elem_init_value )*;
 array_elem_init_value               : expression | enum_value | struct_init | array_init; 
 
 //结构体定义
