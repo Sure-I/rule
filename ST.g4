@@ -23,11 +23,11 @@ namespace_name                      : Identifier;
 using_directive                     : 'USING' namespace_h_name ( ',' namespace_h_name )* ';'; 
 
 /* 程序体Program */
-prog_decl                           : 'PROGRAM' prog_name all_var_decls* method_decl* statements 'END_PROGRAM';
+prog_decl                           : 'PROGRAM' prog_name all_var_decls* method_decl* 'BEGIN'? statements 'END_PROGRAM';
 prog_name                           : Identifier;
 
 /* 函数Function */
-func_decl                           : 'FUNCTION' derived_func_name (':' data_type_access)? using_directive* all_var_decls* method_decl* statements 'END_FUNCTION';
+func_decl                           : 'FUNCTION' derived_func_name (':' data_type_access)? using_directive* all_var_decls* method_decl* 'BEGIN'? statements 'END_FUNCTION';
 
 func_name                           : std_func_name | derived_func_name; 
 std_func_name                       : 'TRUNC' | 'ABS' | 'SQRT' | 'LN' | 'LOG' | 'EXP' | 'SIN' | 'COS' | 'TAN' | 'ASIN' | 'ACOS' | 'ATAN' | 'ATAN2 ' | 'ADD' | 'SUB' | 'MUL' | 'DIV' | 'MOD' | 'EXPT' | 'MOVE ' | 'SHL' | 'SHR' | 'ROL' | 'ROR' 
@@ -48,7 +48,7 @@ fb_instance_name                    : ( namespace_name '.' )* fb_name '^' *;
 
 /* 方法Method */
 method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? Identifier ( ':' data_type_access )?
-                                    ( all_var_decls )* statements 'END_METHOD'; 
+                                    ( all_var_decls )* 'BEGIN'?  statements 'END_METHOD'; 
 
 /* 类Class */
 class_decl                          : 'CLASS' ( 'FINAL' | 'ABSTRACT' )? Identifier using_directive * ( 'EXTENDS' type_access )? ( 'IMPLEMENTS' interface_name_list )?
