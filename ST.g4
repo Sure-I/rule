@@ -47,8 +47,9 @@ derived_fb_name                     : Identifier;
 fb_instance_name                    : ( namespace_name '.' )* fb_name '^' *; 
 
 /* 方法Method */
-method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? Identifier ( ':' data_type_access )?
+method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? method_name ( ':' data_type_access )?
                                     ( all_var_decls )* 'BEGIN'?  statements 'END_METHOD'; 
+method_name                         : Identifier;
 
 /* 类Class */
 class_decl                          : 'CLASS' ( 'FINAL' | 'ABSTRACT' )? Identifier using_directive * ( 'EXTENDS' type_access )? ( 'IMPLEMENTS' interface_name_list )?
