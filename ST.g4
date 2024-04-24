@@ -39,7 +39,7 @@ func_access                         : ( namespace_name '.' )* func_name;
 
 /* 函数块Function_block */
 fb_decl                             : 'FUNCTION_BLOCK' ( 'FINAL' | 'ABSTRACT' )? derived_fb_name using_directive * ( 'EXTENDS' ( type_access ) )? ( 'IMPLEMENTS' interface_name_list )?
-                                      all_var_decls*  'BEGIN'? method_decl* statements  'END_FUNCTION_BLOCK'; 
+                                      all_var_decls*  method_decl* statements  'END_FUNCTION_BLOCK'; 
 fb_name                             : std_fb_name | derived_fb_name; 
 std_fb_name                         : 'SR' | 'RS' | 'R_TRIG' | 'F_TRIG' | 'CTU'| 'CTD' | 'CTUD' | 'TP' | 'TON' | 'TOF'; 
 derived_fb_name                     : Identifier; 
@@ -47,9 +47,8 @@ derived_fb_name                     : Identifier;
 fb_instance_name                    : ( namespace_name '.' )* fb_name '^' *; 
 
 /* 方法Method */
-method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? method_name ( ':' data_type_access )?
+method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? Identifier ( ':' data_type_access )?
                                     ( all_var_decls )* 'BEGIN'?  statements 'END_METHOD'; 
-method_name                         : Identifier;
 
 /* 类Class */
 class_decl                          : 'CLASS' ( 'FINAL' | 'ABSTRACT' )? Identifier using_directive * ( 'EXTENDS' type_access )? ( 'IMPLEMENTS' interface_name_list )?
@@ -208,15 +207,6 @@ struct_init                         : '(' struct_elem_init ( ',' struct_elem_ini
 struct_elem_init                    : struct_elem_name ':=' ( expression | array_init | struct_init | ref_value ); 
 
 struct_elem_name                    : Identifier; 
-
-/* struct_type_decl                    : Identifier ':' struct_spec; 
-struct_spec                         : struct_decl | struct_spec_init; 
-struct_spec_init                    : type_access ( ':=' struct_init )?; 
-struct_decl                         :'STRUCT' 'OVERLAP' ? ( struct_elem_decl ';' )+ 'END_STRUCT'; 
-struct_elem_decl                    : struct_elem_name ( 'AT' Direct_Variable Multibit_part_access ? )? ':' ( simple_spec_init | subrange_spec_init | enum_spec_init | array_spec_init | struct_spec_init ); 
-struct_elem_name                    : Identifier; 
-struct_init                         : '(' struct_elem_init ( ',' struct_elem_init )* ')'; 
-struct_elem_init                    : struct_elem_name ':=' ( expression | enum_value | array_init | struct_init | ref_value );  */
 
 //字符串定义
 str_type_decl                       : string_Type_Name ':' string_Type_Name ( ':=' Char_Str )?;
