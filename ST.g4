@@ -157,7 +157,7 @@ type_decl                           : simple_type_decl | subrange_type_decl | en
 //////类型声明是独立的，初始化属于变量声明的部分
 //////对原规则做出修改，在类型声明中去除init
 ///////////////////////////////////////////// */
-simple_type_decl                    : type_name ':' elem_type_name; 
+simple_type_decl                    : type_name ':' elem_type_name;
 
 simple_spec_init                    : elem_type_name (':=' expression )?; 
 
@@ -194,17 +194,31 @@ array_init                          : '[' array_elem_init_value (',' array_elem_
                                     | '[' Unsigned_Int array_elem_init_value? ']'
                                     | '(' Unsigned_Int array_elem_init_value? ')';
 
-array_elem_init_value               : expression | enum_value | struct_init | array_init;
+array_elem_init_value               : expression | struct_init | array_init;
 
 //结构体定义
-struct_type_decl                    : Identifier ':' struct_spec; 
+struct_type_decl                    : type_name ':' struct_spec;
+struct_spec                         : type_access
+                                    | 'STRUCT' 'OVERLAP'? (struct_elem_decl';')+ 'END_STRUCT';
+struct_elem_decl                    :struct_elem_name ( 'AT' Direct_Variable Multibit_part_access ? )? ':' (data_type_access | subrange_spec | enum_spec | array_spec | struct_spec);
+
+
+struct_spec_init                    : type_access (':=' struct_init)?;
+struct_init                         : '(' struct_elem_init ( ',' struct_elem_init )* ')';
+struct_elem_init                    : struct_elem_name ':=' ( expression | array_init | struct_init | ref_value ); 
+
+struct_elem_name                    : Identifier; 
+
+/* struct_type_decl                    : Identifier ':' struct_spec; 
 struct_spec                         : struct_decl | struct_spec_init; 
 struct_spec_init                    : type_access ( ':=' struct_init )?; 
 struct_decl                         :'STRUCT' 'OVERLAP' ? ( struct_elem_decl ';' )+ 'END_STRUCT'; 
 struct_elem_decl                    : struct_elem_name ( 'AT' Direct_Variable Multibit_part_access ? )? ':' ( simple_spec_init | subrange_spec_init | enum_spec_init | array_spec_init | struct_spec_init ); 
 struct_elem_name                    : Identifier; 
 struct_init                         : '(' struct_elem_init ( ',' struct_elem_init )* ')'; 
-struct_elem_init                    : struct_elem_name ':=' ( expression | enum_value | array_init | struct_init | ref_value ); 
+struct_elem_init                    : struct_elem_name ':=' ( expression | enum_value | array_init | struct_init | ref_value );  */
+
+//字符串定义
 str_type_decl                       : string_Type_Name ':' string_Type_Name ( ':=' Char_Str )?;
 
 /* 引用操作符 */
@@ -279,20 +293,16 @@ Access_Spec                         : 'PUBLIC' | 'PROTECTED' | 'PRIVATE' | 'INTE
 
 
 /* 常量 */
-constant                            : numeric_literal | char_literal | time_literal;
+constant                            : numeric_literal | char_literal | time_literal | bit_str_literal | bool_literal;
 
 //数字类常量
 //这里为了减少语法树的深度，将部分RuleNode改写成了TerminalNode
-numeric_literal                     : int_literal | real_literal | real_literal_exponent | bool_literal | typed_literal;
+numeric_literal                     : int_literal | Real_Literal;
 
-int_literal                         : Unsigned_Int | Signed_Int | Binary_Int | Octal_Int | Hex_Int;
-real_literal                        : Signed_Int '.' Unsigned_Int;
-real_literal_exponent               : Signed_Int '.' Unsigned_Int ( 'E' | 'e' ) Signed_Int;
+int_literal                         : ( Int_Type_Name '#' )? (Unsigned_Int | Signed_Int | Binary_Int | Octal_Int | Hex_Int);
+Real_Literal                        : ( Real_Type_Name '#' )? Signed_Int '.' Unsigned_Int (( 'E' | 'e' ) Signed_Int)?;
 bool_literal                        : 'FALSE' | 'TRUE';
-typed_literal                       : (Int_Type_Name '#') int_literal
-                                    | (Real_Type_Name '#') real_literal
-                                    | (Bool_Type_Name '#') bool_literal
-                                    | (Multibits_Type_Name '#') (Unsigned_Int | Signed_Int | Binary_Int | Octal_Int | Hex_Int);
+bit_str_literal                     : ( Multibits_Type_Name '#' )? ( Unsigned_Int | Binary_Int | Octal_Int | Hex_Int );
 
 Unsigned_Int                        : Digit ( '_' ? Digit)*;
 Signed_Int                          : ( '+' | '-' )? Unsigned_Int;
