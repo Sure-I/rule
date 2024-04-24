@@ -202,7 +202,7 @@ struct_spec                         : type_access
 struct_elem_decl                    :struct_elem_name ( 'AT' Direct_Variable Multibit_part_access ? )? ':' (data_type_access | subrange_spec | enum_spec | array_spec | struct_spec);
 
 
-struct_spec_init                    : type_access (':=' struct_init)?;
+struct_spec_init                    : struct_spec (':=' struct_init)?;
 struct_init                         : '(' struct_elem_init ( ',' struct_elem_init )* ')';
 struct_elem_init                    : struct_elem_name ':=' ( expression | array_init | struct_init | ref_value ); 
 
