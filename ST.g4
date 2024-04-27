@@ -47,8 +47,9 @@ derived_fb_name                     : Identifier;
 fb_instance_name                    : ( namespace_name '.' )* fb_name '^' *; 
 
 /* 方法Method */
-method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? Identifier ( ':' data_type_access )?
+method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? method_name ( ':' data_type_access )?
                                     ( all_var_decls )* 'BEGIN'?  statements 'END_METHOD'; 
+method_name                         : Identifier;
 
 /* 类Class */
 class_decl                          : 'CLASS' ( 'FINAL' | 'ABSTRACT' )? Identifier using_directive * ( 'EXTENDS' type_access )? ( 'IMPLEMENTS' interface_name_list )?
@@ -84,15 +85,15 @@ expression                          : '(' expression ')'
 //statement部分
 statements                          : stmt_list;
 stmt_list                           : ( stmt ? ';' )*; 
-stmt                                : assign_stmt | subprog_ctrl_stmt | selection_stmt | iteration_stmt | exit_stmt | continue_stmt; 
+stmt                                : assign_stmt | subprog_ctrl_stmt | selection_stmt | iteration_stmt | exit_stmt | continue_stmt | return_stmt; 
 
 fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int ); 
 
 assign_stmt                         : ( variable ':=' expression ) | ref_assign | assignment_attempt; 
-assignment_attempt                  : ( ref_name | ref_deref ) '?=' ( ref_name | ref_deref | ref_value ); 
+assignment_attempt                  : ( ref_name | ref_deref ) '?=' ( ref_name | ref_deref | ref_value );
 
 invocation                          : ( fb_instance_name | type_name | 'THIS' | ( ( 'THIS' '.' )? ( ( ( fb_instance_name | class_instance_name ) '.' )+ ) type_name ) ) '(' ( param_assign ( ',' param_assign )* )? ')'; 
-subprog_ctrl_stmt                   : func_call | invocation | 'SUPER' '(' ')' | 'RETURN'; 
+subprog_ctrl_stmt                   : func_call | invocation | 'SUPER' '(' ')';
 param_assign                        : ( ( variable_name ':=' )? expression ) | ref_assign | ( 'NOT' ? variable_name '=>' variable ); 
 
 selection_stmt                      : if_stmt | case_stmt; 
@@ -121,6 +122,7 @@ repeat_stmt                         : 'REPEAT' stmt_list 'UNTIL' expression 'END
 
 exit_stmt                           : 'EXIT';
 continue_stmt                       : 'CONTINUE';
+return_stmt                         : 'RETURN'expression?; 
 
 /* 数据类型 */
 data_type_access                    : elem_type_name | derived_type_access;
