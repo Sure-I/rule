@@ -89,7 +89,7 @@ stmt                                : assign_stmt | subprog_ctrl_stmt | selectio
 
 fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int ); 
 
-assign_stmt                         : ( variable ':=' expression ) | ref_assign | assignment_attempt; 
+assign_stmt                         : ( variable ':=' (expression | quote_value) ) | ref_assign | assignment_attempt; 
 assignment_attempt                  : ( ref_name | ref_deref ) '?=' ( ref_name | ref_deref | ref_value );
 
 invocation                          : ( fb_instance_name | type_name | 'THIS' | ( ( 'THIS' '.' )? ( ( ( fb_instance_name | class_instance_name ) '.' )+ ) type_name ) ) '(' ( param_assign ( ',' param_assign )* )? ')'; 
@@ -176,7 +176,7 @@ enum_spec                           : type_access
                                     | '(' enum_value ( ',' enum_value )* ')'
                                     | elem_type_name? '(' named_spec ( ',' named_spec )* ')';
 
-named_spec                          : enum_value ( ':=' expression )?;
+named_spec                          : enum_value ( ':=' quote_value )?;
 quote_value                         : ( type_name '#' )? enum_value; 
 enum_value                          : Identifier;
 
