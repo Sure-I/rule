@@ -47,7 +47,7 @@ derived_fb_name                     : Identifier;
 fb_instance_name                    : ( namespace_name '.' )* fb_name '^' *; 
 
 /* 方法Method */
-method_decl                         : 'METHOD' Access_Spec ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? method_name ( ':' data_type_access )?
+method_decl                         : 'METHOD' Access_Spec? ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? method_name ( ':' data_type_access )?
                                     ( all_var_decls )* 'BEGIN'?  statements 'END_METHOD'; 
 method_name                         : Identifier;
 
@@ -70,6 +70,7 @@ access_spec                         : 'PUBLIC' | 'PROTECTED' | 'PRIVATE' | 'INTE
 //由于EMF元模型中的expression结构最多包含两个expression，使用以下规则模式，对AST进行规约，可以将长表达式分解多层短表达式
 expression                          : '(' expression ')'
                                     | ( '+' | '-' ) expression
+                                    | expression ('&' | 'AND') expression
                                     | expression '*' expression
                                     | expression ( '+' | '-' ) expression
                                     | expression ('<' | '>' | '<=' | '>=') expression
@@ -77,6 +78,7 @@ expression                          : '(' expression ')'
                                     | expression '**' expression
                                     | constant
                                     | var_access
+                                    | struct_elem_access
                                     | func_call
                                     | ref_value;
 
@@ -210,6 +212,8 @@ struct_elem_init                    : struct_elem_name ':=' ( expression | array
 
 struct_elem_name                    : Identifier; 
 
+struct_elem_access                  : ( namespace_name '.' )+ variable_name;
+
 //字符串定义
 str_type_decl                       : string_Type_Name ':' string_Type_Name ( ':=' Char_Str )?;
 
@@ -226,7 +230,7 @@ ref_deref                           : ref_name '^' +;
 
 
 /* 变量声明及初始化 */
-all_var_decls                       : var_decls | io_var_decls | var_external_decls | var_global_decls | var_temp_decls | var_access_decls | var_local_decls | var_local_partly_decl;
+all_var_decls                       : var_decls | io_var_decls | var_external_decls | var_global_decls | var_temp_decls | var_access_decls;
 io_var_decls                        : var_input_decls | var_output_decls | var_in_out_decls;
 
 //变量声明，这里使用了同一种匹配规则，而SECTIONS和QUALIFIERS的搭配情况较为复杂，这里只考虑文本的解析，不考虑搭配规则
@@ -240,17 +244,17 @@ var_global_decls                    :'VAR_GLOABLE'   (Is_Retain | Access_Spec)? 
 var_temp_decls                      :'VAR_TEMP'      (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR';
 var_access_decls                    :'VAR_ACCESS'    (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR';
 
-var_local_decls                     :'VAR' ( 'CONSTANT' | 'RETAIN' | 'NON_RETAIN' )? ( loc_var_decl ';' )* 'END_VAR'; 
+/* var_local_decls                     :'VAR' ( 'CONSTANT' | 'RETAIN' | 'NON_RETAIN' )? ( loc_var_decl ';' )* 'END_VAR'; 
 loc_var_decl                        : variable_name ? 'AT' Direct_Variable ':' loc_var_spec_init; 
 loc_var_spec_init                   : simple_spec_init | array_spec_init | struct_spec_init; 
 
 var_local_partly_decl               : 'VAR' ( 'RETAIN' | 'NON_RETAIN' )? loc_partly_var * 'END_VAR';
 loc_partly_var                      : variable_name 'AT' '%' ( 'I' | 'Q' | 'M' ) '*' ':' var_spec ';'; 
-var_spec                            : elem_type_name | array_spec | type_access | ( 'STRING' | 'WSTRING' ) ( '[' Unsigned_Int ']' )?;
+var_spec                            : elem_type_name | array_spec | type_access | ( 'STRING' | 'WSTRING' ) ( '[' Unsigned_Int ']' )?; */
 
 /* decl_common_part                    :variable_list ':' (simple_spec_init | str_var_init | ref_spec_init | array_spec_init | struct_spec_init | edge_decl | unknown_decl)
                                     | interface_spec_init; */
-decl_common_part                    :variable_list ':' (simple_spec_init | subrange_spec_init | enum_spec_init | ref_spec_init | array_spec_init | struct_spec_init | unknown_decl)
+decl_common_part                    :variable_list ':' (simple_spec_init | subrange_spec_init | enum_spec_init | ref_spec_init | array_spec_init | struct_spec_init | fb_name | unknown_decl)
                                     | interface_spec_init;
 
 //变量初始化
