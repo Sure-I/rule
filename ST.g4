@@ -13,7 +13,12 @@ grammar ST;
 program                             : all_decl+;
 all_decl                            : using_directive* ( namespace_decl | var_global_decls | data_type_decl | prog_decl | func_decl | fb_decl | class_decl | interface_decl)+;
 
+
 /* 命名空间Namespace */
+
+//个人理解这里的namespace_decl和namespace_elements并不是实际使用中的规则
+//只是用来描述 data_type_decl、func_decl等这些声明是具有作用域的
+//USING关键字才是实际使用中的重要部分，表示引入其它的模块，比如函数块、程序
 namespace_decl                      : 'NAMESPACE' 'INTERNAL' ? namespace_h_name using_directive * namespace_elements 'END_NAMESPACE'; 
 
 namespace_elements                  : ( data_type_decl | func_decl | fb_decl | class_decl | interface_decl | namespace_decl )+; 
@@ -27,15 +32,15 @@ prog_decl                           : 'PROGRAM' prog_name all_var_decls* method_
 prog_name                           : Identifier;
 
 /* 函数Function */
-func_decl                           : 'FUNCTION' derived_func_name (':' data_type_access)? using_directive* all_var_decls* method_decl* 'BEGIN'? statements 'END_FUNCTION';
+func_decl                           : 'FUNCTION' derived_func_name (':' data_type_access)? using_directive* all_var_decls* 'BEGIN'? statements 'END_FUNCTION';
 
 func_name                           : std_func_name | derived_func_name; 
 std_func_name                       : 'TRUNC' | 'ABS' | 'SQRT' | 'LN' | 'LOG' | 'EXP' | 'SIN' | 'COS' | 'TAN' | 'ASIN' | 'ACOS' | 'ATAN' | 'ATAN2 ' | 'ADD' | 'SUB' | 'MUL' | 'DIV' | 'MOD' | 'EXPT' | 'MOVE ' | 'SHL' | 'SHR' | 'ROL' | 'ROR' 
                                     | 'AND' | 'OR' | 'XOR' | 'NOT' | 'SEL' | 'MAX' | 'MIN' | 'LIMIT' | 'MUX ' | 'GT' | 'GE' | 'EQ' | 'LE' | 'LT' | 'NE' | 'LEN' | 'LEFT' | 'RIGHT' | 'MID' | 'CONCAT' | 'INSERT' | 'DELETE' | 'REPLACE' | 'FIND'; 
 derived_func_name                   : Identifier;
 
-func_call                           : func_access '(' ( param_assign ( ',' param_assign )* )? ')'; 
-func_access                         : ( namespace_name '.' )* func_name;
+func_call                           : func_name '(' ( param_assign ( ',' param_assign )* )? ')'; 
+
 
 /* 函数块Function_block */
 fb_decl                             : 'FUNCTION_BLOCK' ( 'FINAL' | 'ABSTRACT' )? derived_fb_name using_directive * ( 'EXTENDS' ( type_access ) )? ( 'IMPLEMENTS' interface_name_list )?
@@ -44,11 +49,13 @@ fb_name                             : std_fb_name | derived_fb_name;
 std_fb_name                         : 'SR' | 'RS' | 'R_TRIG' | 'F_TRIG' | 'CTU'| 'CTD' | 'CTUD' | 'TP' | 'TON' | 'TOF'; 
 derived_fb_name                     : Identifier; 
 
-fb_instance_name                    : ( namespace_name '.' )* fb_name '^' *; 
+fb_elem_name                        : Identifier;
+//fb的实例成员访问可以是变量，指针，放入invocation就是方法,另外结构体的成员访问也会被识别为这条规则
+fb_instance_name                    : ( namespace_name '.' )+ fb_elem_name '^'*; 
 
 /* 方法Method */
 method_decl                         : 'METHOD' Access_Spec? ( 'FINAL' | 'ABSTRACT' )? 'OVERRIDE' ? method_name ( ':' data_type_access )?
-                                    ( all_var_decls )* 'BEGIN'?  statements 'END_METHOD'; 
+                                    ( all_var_decls )* 'BEGIN'?  statements 'END_METHOD';
 method_name                         : Identifier;
 
 /* 类Class */
@@ -78,8 +85,8 @@ expression                          : '(' expression ')'
                                     | expression '**' expression
                                     | constant
                                     | var_access
-                                    | struct_elem_access
-                                    | func_call
+                                    | fb_instance_name
+                                    | invocation
                                     | ref_value;
 
 
@@ -212,7 +219,8 @@ struct_elem_init                    : struct_elem_name ':=' ( expression | array
 
 struct_elem_name                    : Identifier; 
 
-struct_elem_access                  : ( namespace_name '.' )+ variable_name;
+//这条规则实际上和fb_instance_name本质上是一样的，所以在AST中只能自行区分
+struct_elem_access                  : ( namespace_name '.' )+ struct_elem_name;
 
 //字符串定义
 str_type_decl                       : string_Type_Name ':' string_Type_Name ( ':=' Char_Str )?;
