@@ -44,7 +44,7 @@ func_call                           : func_name '(' ( param_assign ( ',' param_a
 
 /* 函数块Function_block */
 fb_decl                             : 'FUNCTION_BLOCK' ( 'FINAL' | 'ABSTRACT' )? derived_fb_name using_directive * ( 'EXTENDS' ( type_access ) )? ( 'IMPLEMENTS' interface_name_list )?
-                                      all_var_decls*  method_decl* statements  'END_FUNCTION_BLOCK'; 
+                                      all_var_decls*  method_decl* 'END_FUNCTION_BLOCK'; 
 fb_name                             : std_fb_name | derived_fb_name; 
 std_fb_name                         : 'SR' | 'RS' | 'R_TRIG' | 'F_TRIG' | 'CTU'| 'CTD' | 'CTUD' | 'TP' | 'TON' | 'TOF'; 
 derived_fb_name                     : Identifier; 
@@ -86,6 +86,7 @@ expression                          : '(' expression ')'
                                     | constant
                                     | var_access
                                     | fb_instance_name
+                                    | func_call
                                     | invocation
                                     | ref_value;
 
