@@ -11,7 +11,7 @@
 grammar ST;
 
 program                             : all_decl+;
-all_decl                            : using_directive* ( namespace_decl | var_global_decls | data_type_decl | prog_decl | func_decl | fb_decl | class_decl | interface_decl)+;
+all_decl                            : using_directive* ( namespace_decl | all_var_decls | data_type_decl | prog_decl | func_decl | fb_decl | class_decl | interface_decl)+;
 
 
 /* 命名空间Namespace */
@@ -28,7 +28,7 @@ namespace_name                      : Identifier;
 using_directive                     : 'USING' namespace_h_name ( ',' namespace_h_name )* ';'; 
 
 /* 程序体Program */
-prog_decl                           : 'PROGRAM' prog_name all_var_decls* method_decl* 'BEGIN'? statements 'END_PROGRAM';
+prog_decl                           : 'PROGRAM' prog_name (all_var_decls | func_decl)* 'BEGIN'? statements 'END_PROGRAM';
 prog_name                           : Identifier;
 
 /* 函数Function */
@@ -44,7 +44,7 @@ func_call                           : func_name '(' ( param_assign ( ',' param_a
 
 /* 函数块Function_block */
 fb_decl                             : 'FUNCTION_BLOCK' ( 'FINAL' | 'ABSTRACT' )? derived_fb_name using_directive * ( 'EXTENDS' ( type_access ) )? ( 'IMPLEMENTS' interface_name_list )?
-                                      all_var_decls*  method_decl* 'END_FUNCTION_BLOCK'; 
+                                      (all_var_decls | method_decl)* 'END_FUNCTION_BLOCK'; 
 fb_name                             : std_fb_name | derived_fb_name; 
 std_fb_name                         : 'SR' | 'RS' | 'R_TRIG' | 'F_TRIG' | 'CTU'| 'CTD' | 'CTUD' | 'TP' | 'TON' | 'TOF'; 
 derived_fb_name                     : Identifier; 
@@ -60,7 +60,7 @@ method_name                         : Identifier;
 
 /* 类Class */
 class_decl                          : 'CLASS' ( 'FINAL' | 'ABSTRACT' )? Identifier using_directive * ( 'EXTENDS' type_access )? ( 'IMPLEMENTS' interface_name_list )?
-                                    ( all_var_decls )* ( method_decl )* 'END_CLASS'; 
+                                    ( all_var_decls | method_decl )* 'END_CLASS'; 
 class_instance_name                 : ( namespace_name '.' )* Identifier '^' *; 
 interface_decl                      : 'INTERFACE' Identifier using_directive *
                                     ( 'EXTENDS' interface_name_list )? method_prototype * 'END_INTERFACE'; 
