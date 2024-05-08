@@ -84,8 +84,7 @@ expression                          : '(' expression ')'
                                     | expression ('=' | '<>') expression
                                     | expression '**' expression
                                     | constant
-                                    | var_access
-                                    | fb_instance_name
+                                    | variable
                                     | func_call
                                     | invocation
                                     | ref_value;
@@ -93,8 +92,7 @@ expression                          : '(' expression ')'
 
 
 //statement部分
-statements                          : stmt_list;
-stmt_list                           : ( stmt ? ';' )*; 
+statements                          : ( stmt ? ';' )*;
 stmt                                : assign_stmt | subprog_ctrl_stmt | selection_stmt | iteration_stmt | exit_stmt | continue_stmt | return_stmt; 
 
 fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int ); 
@@ -108,27 +106,27 @@ param_assign                        : ( ( variable_name ':=' )? expression ) | r
 
 selection_stmt                      : if_stmt | case_stmt; 
 
-if_stmt                             : 'IF' expression 'THEN' stmt_list elsif_stmt* else_stmt? 'END_IF'; 
-elsif_stmt                          : 'ELSIF' expression 'THEN' stmt_list;
-else_stmt                           : 'ELSE' stmt_list;
+if_stmt                             : 'IF' expression 'THEN' statements elsif_stmt* else_stmt? 'END_IF'; 
+elsif_stmt                          : 'ELSIF' expression 'THEN' statements;
+else_stmt                           : 'ELSE' statements;
 
-case_stmt                           : 'CASE' expression 'OF' case_selection + ( 'ELSE' stmt_list )? 'END_CASE'; 
-case_selection                      : case_list ':' stmt_list; 
+case_stmt                           : 'CASE' expression 'OF' case_selection + ( 'ELSE' statements )? 'END_CASE'; 
+case_selection                      : case_list ':' statements; 
 case_list                           : case_list_elem ( ',' case_list_elem )*; 
 case_list_elem                      : subrange | expression; 
 
 iteration_stmt                      : for_stmt | while_stmt | repeat_stmt;
 
-for_stmt                            : 'FOR' control_variable ':=' for_list 'DO' stmt_list 'END_FOR'; 
+for_stmt                            : 'FOR' control_variable ':=' for_list 'DO' statements 'END_FOR'; 
 control_variable                    : Identifier; 
 for_list                            : start_expr 'TO' end_expr ( 'BY' step_expr )?; 
 start_expr                          : expression;
 end_expr                            : expression;
 step_expr                           : expression;
 
-while_stmt                          : 'WHILE' expression 'DO' stmt_list 'END_WHILE'; 
+while_stmt                          : 'WHILE' expression 'DO' statements 'END_WHILE'; 
 
-repeat_stmt                         : 'REPEAT' stmt_list 'UNTIL' expression 'END_REPEAT';
+repeat_stmt                         : 'REPEAT' statements 'UNTIL' expression 'END_REPEAT';
 
 exit_stmt                           : 'EXIT';
 continue_stmt                       : 'CONTINUE';
@@ -248,8 +246,8 @@ var_input_decls                     :'VAR_INPUT'     (Is_Retain | Access_Spec)? 
 var_output_decls                    :'VAR_OUTPUT'    (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR';
 var_in_out_decls                    :'VAR_IN_OUT'    (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR';
 var_external_decls                  :'VAR_EXTERNAL'  (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR';
-var_global_decls                    :'VAR_GLOABLE'   (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR'
-                                    |'VAR_GLOABLE'   (Is_Retain | Access_Spec)?  ( variable_name 'AT' Direct_Variable) 'END_VAR';
+var_global_decls                    :'VAR_GLOBAL'   (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR'
+                                    |'VAR_GLOBAL'   (Is_Retain | Access_Spec)?  ( variable_name 'AT' Direct_Variable) 'END_VAR';
 var_temp_decls                      :'VAR_TEMP'      (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR';
 var_access_decls                    :'VAR_ACCESS'    (Is_Retain | Access_Spec)?  ( decl_common_part ';' )* 'END_VAR';
 
@@ -277,15 +275,18 @@ unknown_decl                       : type_access ( ':=' ( expression | array_ini
 variable                            : Direct_Variable | symbolic_variable;
 variable_list                       : variable_name (',' variable_name)*;
 variable_name                       : Identifier;
-multi_elem_var                      : var_access ( subscript_list | struct_variable )+; 
-subscript_list                      : '[' subscript ( ',' subscript )* ']'; 
+//multi_elem_var                      : var_access ( subscript_list | struct_variable )+; 
+subscript_list                      : ('[' subscript ( ',' subscript )* ']'); 
 subscript                           : expression; 
-struct_variable                     : '.' struct_elem_select; 
-struct_elem_select                  : var_access; 
+//struct_variable                     : '.' struct_elem_select; 
+//struct_elem_select                  : var_access; 
 
 
-var_access                          : variable_name | ref_deref;
-symbolic_variable                   : ( ( 'THIS' '.' ) | ( namespace_name '.' )+ )? ( var_access | multi_elem_var ); 
+//var_access                          : variable_name | ref_deref;
+//symbolic_variable                   : ( ( 'THIS' '.' ) | ( namespace_name '.' )+ )? ( var_access | multi_elem_var ); 
+symbolic_variable                   : variable_name | ref_deref | fb_instance_name | symbolic_variable subscript_list;
+
+
 // 直接取址变量
 // 注意可能会和ID冲突,所以需要 fragment Direct_variable 
 fragment Direct_Variable            : '%' ( 'I' | 'Q' | 'M' ) ( 'X' | 'B' | 'W' | 'D' | 'L' )? Unsigned_Int ( '.' Unsigned_Int )*;
