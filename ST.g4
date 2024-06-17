@@ -277,8 +277,10 @@ variable                            : Direct_Variable | symbolic_variable;
 variable_list                       : variable_name (',' variable_name)*;
 variable_name                       : Identifier;
 //multi_elem_var                      : var_access ( subscript_list | struct_variable )+; 
-subscript_list                      : ('[' subscript ( ',' subscript )* ']'); 
-subscript                           : expression; 
+
+subscript_list                      : ('[' expression ( ',' expression )* ']'); 
+//subscript_list                      : ('[' subscript ( ',' subscript )* ']'); 
+//减少语法树深度 subscript                           : expression; 
 //struct_variable                     : '.' struct_elem_select; 
 //struct_elem_select                  : var_access; 
 
