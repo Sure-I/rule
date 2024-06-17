@@ -76,13 +76,14 @@ access_spec                         : 'PUBLIC' | 'PROTECTED' | 'PRIVATE' | 'INTE
 //expression部分
 //由于EMF元模型中的expression结构最多包含两个expression，使用以下规则模式，对AST进行规约，可以将长表达式分解多层短表达式
 expression                          : '(' expression ')'
-                                    | ( '+' | '-' ) expression
-                                    | expression ('&' | 'AND') expression
-                                    | expression '*' expression
-                                    | expression ( '+' | '-' ) expression
-                                    | expression ('<' | '>' | '<=' | '>=') expression
-                                    | expression ('=' | '<>') expression
+                                    | ( '+' | '-' | 'NOT') expression
                                     | expression '**' expression
+                                    | expression ('*' | '/' | 'MOD') expression
+                                    | expression ( '+' | '-' ) expression
+                                    | expression ('<' | '>' | '<=' | '>=' | '=' | '<>') expression
+                                    | expression ('&' | 'AND') expression
+                                    | expression 'XOR' expression
+                                    | expression 'OR' expression
                                     | constant
                                     | variable
                                     | func_call
