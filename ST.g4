@@ -28,7 +28,7 @@ namespace_name                      : Identifier;
 using_directive                     : 'USING' namespace_h_name ( ',' namespace_h_name )* ';'; 
 
 /* 程序体Program */
-prog_decl                           : 'PROGRAM' prog_name (all_var_decls | func_decl)* 'BEGIN'? statements 'END_PROGRAM';
+prog_decl                           : 'PROGRAM' prog_name (all_var_decls | func_decl)* 'BEGIN'? statements* 'END_PROGRAM';
 prog_name                           : Identifier;
 
 /* 函数Function */
@@ -93,10 +93,10 @@ expression                          : '(' expression ')'
 
 
 //statement部分
-statements                          : ( stmt ? ';' )*;
-stmt                                : assign_stmt | subprog_ctrl_stmt | selection_stmt | iteration_stmt | exit_stmt | continue_stmt | return_stmt; 
-
-fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int ); 
+statements                          : stmt+;
+stmt                                : assign_stmt ';' | subprog_ctrl_stmt (';')? | selection_stmt (';')?  | iteration_stmt (';')? | exit_stmt (';')? | continue_stmt (';')? | return_stmt (';')? | empty_stmt ;
+empty_stmt                          : ';';
+fragment Multibit_part_access       : '.' ( Unsigned_Int | '%' ( 'X' | 'B' | 'W' | 'D' | 'L' ) ? Unsigned_Int );
 
 assign_stmt                         : ( variable ':=' (expression | quote_value) ) | ref_assign | assignment_attempt; 
 assignment_attempt                  : ( ref_name | ref_deref ) '?=' ( ref_name | ref_deref | ref_value );
