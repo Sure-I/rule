@@ -32,7 +32,7 @@ prog_decl                           : 'PROGRAM' prog_name (all_var_decls | func_
 prog_name                           : Identifier;
 
 /* 函数Function */
-func_decl                           : 'FUNCTION' derived_func_name (':' data_type_access)? using_directive* all_var_decls* 'BEGIN'? statements 'END_FUNCTION';
+func_decl                           : 'FUNCTION' derived_func_name (':' data_type_access)? using_directive* all_var_decls* 'BEGIN'? statements* 'END_FUNCTION';
 
 func_name                           : std_func_name | derived_func_name; 
 std_func_name                       : 'TRUNC' | 'ABS' | 'SQRT' | 'LN' | 'LOG' | 'EXP' | 'SIN' | 'COS' | 'TAN' | 'ASIN' | 'ACOS' | 'ATAN' | 'ATAN2 ' | 'ADD' | 'SUB' | 'MUL' | 'DIV' | 'MOD' | 'EXPT' | 'MOVE ' | 'SHL' | 'SHR' | 'ROL' | 'ROR' 
@@ -44,7 +44,7 @@ func_call                           : func_name '(' ( param_assign ( ',' param_a
 
 /* 函数块Function_block */
 fb_decl                             : 'FUNCTION_BLOCK' ( 'FINAL' | 'ABSTRACT' )? derived_fb_name using_directive * ( 'EXTENDS' ( type_access ) )? ( 'IMPLEMENTS' interface_name_list )?
-                                      (all_var_decls | method_decl)* statements 'END_FUNCTION_BLOCK'; 
+                                      (all_var_decls | method_decl)* statements* 'END_FUNCTION_BLOCK';
 fb_name                             : std_fb_name | derived_fb_name; 
 std_fb_name                         : 'SR' | 'RS' | 'R_TRIG' | 'F_TRIG' | 'CTU'| 'CTD' | 'CTUD' | 'TP' | 'TON' | 'TOF'; 
 derived_fb_name                     : Identifier; 
@@ -161,7 +161,7 @@ type_name                           : Identifier;
 
 data_type_decl                      : 'TYPE' type_decl_list 'END_TYPE'; 
 type_decl_list                      : ( type_decl ';' )+;
-type_decl                           : simple_type_decl | subrange_type_decl | enum_type_decl | array_type_decl | struct_type_decl | str_type_decl | ref_type_decl; 
+type_decl                           : simple_type_decl | subrange_type_decl | enum_type_decl | array_type_decl | struct_type_decl | str_type_decl | ref_type_decl;
 
 /* ///这里注意一个问题，影响到emf的ECore编写
 //////类型声明是独立的，初始化属于变量声明的部分
