@@ -88,7 +88,8 @@ expression                          : '(' expression ')'
                                     | variable
                                     | func_call
                                     | invocation
-                                    | ref_value;
+                                    | ref_value
+                                    | struct_init;
 
 
 
