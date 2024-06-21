@@ -161,8 +161,8 @@ type_access                         : ( namespace_name '.' )* type_name;
 type_name                           : Identifier;
 
 data_type_decl                      : 'TYPE' type_decl_list 'END_TYPE'; 
-type_decl_list                      : ( type_decl ';' )+;
-type_decl                           : simple_type_decl | subrange_type_decl | enum_type_decl | array_type_decl | struct_type_decl | str_type_decl | ref_type_decl;
+type_decl_list                      : (type_decl)+;
+type_decl                           : simple_type_decl ';' | subrange_type_decl ';' | enum_type_decl ';' | array_type_decl ';' | struct_type_decl | str_type_decl ';' | ref_type_decl ';';
 
 /* ///这里注意一个问题，影响到emf的ECore编写
 //////类型声明是独立的，初始化属于变量声明的部分
@@ -174,7 +174,7 @@ simple_spec_init                    : elem_type_name (':=' expression )?;
 
 //子范围数据类型定义
 subrange_type_decl                  : type_name ':' subrange_spec;
-subrange_spec                       : type_access | elem_type_name '('subrange')' ; 
+subrange_spec                       : type_access | elem_type_name '('subrange')' ;
 subrange                            : expression '..' expression; 
 
 subrange_spec_init                  : subrange_spec ( ':=' expression )?; 
